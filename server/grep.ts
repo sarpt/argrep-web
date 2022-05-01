@@ -79,4 +79,3 @@ export async function grepFile(
 
   return results;
 }
-
