@@ -1,4 +1,4 @@
-import { GrepArchivesUC } from "../../usecases/grepArchive.ts";
+import { GrepArchivesUC } from "../usecases/grepArchive.ts";
 
 export const putGreps = (grepArchives: GrepArchivesUC) =>
   async (req: Request) => {
