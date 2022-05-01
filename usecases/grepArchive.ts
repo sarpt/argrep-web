@@ -1,6 +1,6 @@
 type args = {
-  paths: string[],
-  grepPatterns: string[],
+  paths: string[];
+  grepPatterns: string[];
 };
 
 export type Hit = {
@@ -10,7 +10,7 @@ export type Hit = {
 };
 
 export type Result = {
-  hits: Hit[],
+  hits: Hit[];
 };
 
 export type GrepArchivesUC = (args: args) => Promise<Result>;
