@@ -1,7 +1,7 @@
 import { readLines } from "https://deno.land/std@0.136.0/io/buffer.ts";
 import { readerFromStreamReader } from "https://deno.land/std@0.136.0/streams/mod.ts";
 
-import { GrepArchivesUC, Hit } from "../../usecases/grepArchive.ts";
+import { GrepArchivesUC, Hit } from "../usecases/grepArchive.ts";
 
 type Data = Hit & {
   err?: string;
