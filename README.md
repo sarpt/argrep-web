@@ -23,6 +23,10 @@ grepping is by `curl`:
 
 `curl -X PUT --data "path=<path to file>" --data "pattern=<some pattern to search>" localhost:8080/greps`
 
+... it will return task id which ten can be used with SSE:
+
+`curl -N localhost:8080/sse/greps?id=<id>`
+
 ### dependencies for running
 
 - `deno` - 1.21.0 and up

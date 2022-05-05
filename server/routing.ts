@@ -1,17 +1,20 @@
 import { Handler } from "https://deno.land/std@0.135.0/http/mod.ts";
 import { router } from "https://crux.land/api/get/2KNRVU.ts";
-import { putGreps } from "./handlers/greps.ts";
+import { getSSEGreps, putGreps } from "./handlers/greps.ts";
 
-import { GrepArchivesUC } from "../usecases/grepArchive.ts";
+import { AddGrepTaskUC } from "./usecases/addGrepTask.ts";
+import { GetGrepTaskResultsUC } from "./usecases/getGrepTaskResults.ts";
 
 export type dependencies = {
-  grepArchives: GrepArchivesUC;
+  addGrepTask: AddGrepTaskUC;
+  getGrepTaskResult: GetGrepTaskResultsUC;
 };
 
 export const routing: (deps: dependencies) => Handler = (deps) =>
   (req) => {
     const handler = router({
-      "PUT@/greps": putGreps(deps.grepArchives),
+      "GET@/sse/greps": getSSEGreps(deps.getGrepTaskResult),
+      "PUT@/greps": putGreps(deps.addGrepTask),
     });
 
     return handler(req);
