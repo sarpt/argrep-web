@@ -13,4 +13,4 @@ export type Result = {
   hits: Hit[];
 };
 
-export type GrepArchivesUC = (args: args) => Promise<Result>;
+export type GrepArchivesUC = (args: args) => AsyncGenerator<Hit, Result, void>;

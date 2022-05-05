@@ -13,16 +13,16 @@ const socketPath = "/tmp/argrep.sock";
 
 const argrepCmd = "argrep";
 const unixSocketPathArg = "--unix-socket-path";
-const patternArg = "-e"; 
+const patternArg = "-e";
 const jsonOutputArg = "--json";
 const grepArgsSeparator = "--";
 const caseInsensitiveGrepArg = "-i";
 
-export const grepArchivesWithArgrep = (): GrepArchivesUC =>
-  async ({
+export const grepArchives = (): GrepArchivesUC =>
+  async function* ({
     paths,
     grepPatterns,
-  }) => {
+  }) {
     const unixSocketPath = [unixSocketPathArg, socketPath];
     const grepPatternsArgs = grepPatterns.reduce(
       (acc, pattern) => [...acc, patternArg, pattern],
@@ -47,7 +47,7 @@ export const grepArchivesWithArgrep = (): GrepArchivesUC =>
     for await (const line of readLines(reader)) {
       const argrepData: Data = JSON.parse(line);
       if (isDataResult(argrepData)) {
-        hits.push(argrepData);
+        yield argrepData;
       }
     }
 
