@@ -24,6 +24,8 @@ export const putGreps = (addGrepTask: AddGrepTaskUC) =>
       status: 200,
       headers: {
         "content-type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "PUT"
       },
     });
   };
@@ -37,7 +39,9 @@ export const getSSEGreps = (getGrepTaskResults: GetGrepTaskResultsUC) =>
       return new Response("No id provided", {
         status: 400,
         headers: {
-          "content-type": "application/json; charset=utf-8",
+          "Content-Type": "application/json; charset=utf-8",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET"
         },
       });
     }
@@ -47,7 +51,9 @@ export const getSSEGreps = (getGrepTaskResults: GetGrepTaskResultsUC) =>
       return new Response(`Grep task with provided id '${id}' not found`, {
         status: 400,
         headers: {
-          "content-type": "application/json; charset=utf-8",
+          "Content-Type": "application/json; charset=utf-8",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET"
         },
       });
     }
@@ -55,15 +61,22 @@ export const getSSEGreps = (getGrepTaskResults: GetGrepTaskResultsUC) =>
     const stream = readableStreamFromIterable(mapHitsToResponses(results));
     return new Response(stream, {
       status: 200,
-      headers: new Headers({ "content-type": "text/event-stream" }),
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET"
+      }
     });
   };
+
+const resultsEvent = 'results';
+const finishedEvent = 'finished';
 
 async function* mapHitsToResponses(results: Results) {
   for await (const result of results) {
     const json = JSON.stringify(result);
-    yield new TextEncoder().encode(`data:${json}\n\n`);
+    yield new TextEncoder().encode(`event:${resultsEvent}\ndata:${json}\n\n`);
   }
 
-  return new Uint8Array();
+  return new TextEncoder().encode(`event:${finishedEvent}\n\n`);
 }
