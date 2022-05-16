@@ -7,7 +7,7 @@ export type Input = {
 export type Output = {
   hits: Hit[],
   done: boolean,
-  errMsg: string,
+  errMsg?: string,
 };
 
 export type getGrepResultsUC = (input: Input) => Promise<Output>;

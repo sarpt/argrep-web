@@ -1,5 +1,6 @@
 export type Input = {
   pattern: string,
+  path: string,
 };
 
 export type Output = {

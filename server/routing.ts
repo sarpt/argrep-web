@@ -14,7 +14,23 @@ export const routing: (deps: dependencies) => Handler = (deps) =>
   (req) => {
     const handler = router({
       "GET@/sse/greps": getSSEGreps(deps.getGrepTaskResult),
+      "OPTIONS@/sse/greps": () => { return new Response("", {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET"
+        },
+      }) },
       "PUT@/greps": putGreps(deps.addGrepTask),
+      "OPTIONS@/greps": () => { return new Response("", {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "PUT"
+        },
+      }) },
     });
 
     return handler(req);
