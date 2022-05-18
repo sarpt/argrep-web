@@ -1,9 +1,11 @@
-import { Button, TextField } from '@material-ui/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Hit } from './domains/grep/entities/hit';
 
 import { getGateways } from './gateways/grep/grepWithArgrepSSE';
 import { getRunGrep } from './plocs/grep';
+
+import { GrepControls } from './GrepControls';
+import { GrepResults } from './GrepResults';
 
 import './App.css';
 
@@ -36,23 +38,18 @@ function App() {
 
   return (
     <div className="App">
-      <TextField
-        placeholder='Path'
-        onChange={(ev) => setPath(ev.target.value) }
-        value={path}
+      <GrepControls
+        grepPattern={grepPattern}
+        onGrep={onGrep}
+        path={path}
+        setGrepPattern={setGrepPattern}
+        setPath={setPath}
       />
-      <TextField
-        placeholder='Grep pattern'
-        onChange={(ev) => setGrepPattern(ev.target.value) }
-        value={grepPattern}
+      <div style={{ height: '10px' }} />
+      <GrepResults
+        inProgress={greppingInProgress}
+        results={grepResults}
       />
-      <Button onClick={onGrep}>Grep</Button>
-      { greppingInProgress ? <span>Grepping...</span> : <></>}
-      {
-        grepResults.map((result, idx) => (
-          <span key={idx}>{result.path}, line {result.line}: ${result.match}</span>
-        ))
-      }
     </div>
   );
 }
