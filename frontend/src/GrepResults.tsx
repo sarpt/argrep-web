@@ -13,13 +13,12 @@ export const GrepResults = ({ inProgress, results }: Props) => {
     <Card>
       <CardContent style={{ display: 'flex', flexDirection: 'column' }}>
         { inProgress ? <span>Grep in progress... <LinearProgress /></span> : <></>}
-        <List component="nav" aria-label="secondary mailbox folders">
+        <List component="nav" aria-label="grep results">
           {
             results.map((result, idx) => (
               <ListItem button>
                 <ListItemText secondary={`${result.path}, line ${result.line}`} primary={result.match} />
               </ListItem>
-              // <span key={idx}>{result.path}, line {result.line}: {result.match}</span>
             ))
           }
         </List>

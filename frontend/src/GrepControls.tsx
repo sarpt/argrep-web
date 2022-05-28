@@ -21,6 +21,7 @@ export const GrepControls = ({ grepPattern, onGrep, path, setPath, setGrepPatter
           value={path}
           variant='outlined'
         />
+        <div style={{ height: '10px' }} />
         <TextField
           label='Pattern'
           placeholder='Pattern to grep'
