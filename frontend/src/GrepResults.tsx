@@ -36,7 +36,7 @@ export const GrepResults = ({ inProgress, results, errMsg }: Props) => {
     <Card>
       <CardContent style={{ display: 'flex', flexDirection: 'column' }}>
         { inProgress ? <span>Grep in progress... <LinearProgress /></span> : <></>}
-        { errMsg ? <span>Error: {errMsg} <LinearProgress /></span> : <></>}
+        { errMsg ? <span>Error: {errMsg}</span> : <></>}
         <Box
           sx={{ width: '100%', height: resultsListHeight, bgcolor: 'background.paper' }}
         >

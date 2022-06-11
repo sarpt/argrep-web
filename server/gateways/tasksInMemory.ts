@@ -54,7 +54,7 @@ async function* grepTaskResultsPoller(task: GrepTask) {
 
   do {
     await timeout();
-    if (previousResultsLength && previousResultsLength === task.results.length) continue;
+    if (!task.errMsg && previousResultsLength === task.results.length) continue;
 
     yield { hits: task.results, errMsg: task.errMsg };
 
