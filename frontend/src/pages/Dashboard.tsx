@@ -18,6 +18,7 @@ export const Dashboard = (props: Props) => {
   const [path, setPath] = useState<string>('');
   const [grepResults, setGrepResults] = useState<Hit[]>([]);
   const [greppingInProgress, setGreppingInProgress] = useState<boolean>(false);
+  const [errMsg, setErrMsg] = useState<string | undefined>();
 
   const onResults = useCallback((results: Hit[]) => {
     setGrepResults(results);
@@ -27,9 +28,10 @@ export const Dashboard = (props: Props) => {
     setGreppingInProgress(false);
   }, []);
 
-  const onError = useCallback(() => {
+  const onError = useCallback((err: string) => {
     setGreppingInProgress(false);
-    console.log('oh boy error has happened');
+    setErrMsg(err);
+    console.error(`grepping error: ${err}`);
   }, []);
 
   const onGrep = useCallback(() => {
@@ -48,6 +50,7 @@ export const Dashboard = (props: Props) => {
       />
       <div style={{ height: '10px' }} />
       <GrepResults
+        errMsg={errMsg}
         inProgress={greppingInProgress}
         results={grepResults}
       />

@@ -9,6 +9,7 @@ const resultsListHeight = 400;
 const overscan = 5;
 
 type Props = {
+  errMsg?: string,
   inProgress: boolean,
   results: Hit[],
 };
@@ -30,11 +31,12 @@ function renderRow(props: ListChildComponentProps<Hit[]>) {
   );
 }
 
-export const GrepResults = ({ inProgress, results }: Props) => {
+export const GrepResults = ({ inProgress, results, errMsg }: Props) => {
   return (
     <Card>
       <CardContent style={{ display: 'flex', flexDirection: 'column' }}>
         { inProgress ? <span>Grep in progress... <LinearProgress /></span> : <></>}
+        { errMsg ? <span>Error: {errMsg} <LinearProgress /></span> : <></>}
         <Box
           sx={{ width: '100%', height: resultsListHeight, bgcolor: 'background.paper' }}
         >

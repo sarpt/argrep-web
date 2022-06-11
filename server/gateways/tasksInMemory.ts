@@ -6,12 +6,14 @@ enum TaskStatus {
   NotStarted = "NotStarted",
   InProgress = "InProgress",
   Done = "Done",
+  Failed = "Failed",
 }
 
-type GrepRunner = AsyncGenerator<Hit, { hits: Hit[] }, void>;
+type GrepRunner = ReturnType<GrepArchivesUC>;
 
 type GrepTask = {
   id: string;
+  errMsg?: string;
   results: Hit[];
   status: TaskStatus;
   grepRunner: GrepRunner;
@@ -52,20 +54,26 @@ async function* grepTaskResultsPoller(task: GrepTask) {
 
   do {
     await timeout();
-    if (previousResultsLength === task.results.length) continue;
+    if (previousResultsLength && previousResultsLength === task.results.length) continue;
 
-    yield { hits: task.results };
+    yield { hits: task.results, errMsg: task.errMsg };
 
     previousResultsLength = task.results.length;
   } while (task.status === TaskStatus.InProgress);
 
-  return { hits: task.results };
+  return { hits: task.results, errMsg: task.errMsg };
 }
 
 async function runGrepTask(task: GrepTask) {
   task.status = TaskStatus.InProgress;
 
   for await (const result of task.grepRunner) {
+    if (result.errMsg) {
+      task.errMsg = result.errMsg;
+      task.status = TaskStatus.Failed;
+      return;
+    }
+
     task.results.push(result);
   }
 
