@@ -41,17 +41,7 @@ const getGrepResults: getGrepResultsUC = async ({ taskId }) => {
       hits: [],
       done: false,
     };
-
-    grepEventSource.addEventListener('results', (ev) => {
-      const { hits } = JSON.parse(ev.data) as sseGrepResultsResponse;
-      
-      task!.hits = hits;
-    });
-
-    grepEventSource.addEventListener('finished', (ev) => {
-      task!.done = true;  
-      grepEventSource.close();
-    });
+    tasks.set(taskId, task);
 
     grepEventSource.addEventListener('error', (ev) => {
       if (task!.done) return;
@@ -61,7 +51,17 @@ const getGrepResults: getGrepResultsUC = async ({ taskId }) => {
       grepEventSource.close();
     });
 
-    tasks.set(taskId, task);
+    grepEventSource.addEventListener('finished', (ev) => {
+      task!.done = true;  
+      grepEventSource.close();
+    });
+
+    grepEventSource.addEventListener('results', (ev) => {
+      const { hits, errMsg } = JSON.parse(ev.data) as sseGrepResultsResponse;
+      
+      task!.hits = hits;
+      task!.errMsg = errMsg;
+    });
   }
 
   return {

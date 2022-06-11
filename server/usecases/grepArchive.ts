@@ -4,13 +4,11 @@ type args = {
 };
 
 export type Hit = {
+  errMsg?: string,
   path: string;
   line: number;
   match: string;
 };
 
-export type Result = {
-  hits: Hit[];
-};
 
-export type GrepArchivesUC = (args: args) => AsyncGenerator<Hit, Result, void>;
+export type GrepArchivesUC = (args: args) => AsyncGenerator<Hit, void, void>;

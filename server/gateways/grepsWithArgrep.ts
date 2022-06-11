@@ -1,5 +1,6 @@
 import { readLines } from "https://deno.land/std@0.136.0/io/buffer.ts";
 import { readerFromStreamReader } from "https://deno.land/std@0.136.0/streams/mod.ts";
+import { CheckArchivePathsUC } from "../usecases/checkArchivePaths.ts";
 
 import { GrepArchivesUC, Hit } from "../usecases/grepArchive.ts";
 
@@ -18,11 +19,22 @@ const jsonOutputArg = "--json";
 const grepArgsSeparator = "--";
 const caseInsensitiveGrepArg = "-i";
 
-export const grepArchives = (): GrepArchivesUC =>
+type dependencies = {
+  checkArchivePaths: CheckArchivePathsUC
+};
+
+export const grepArchives = ({ checkArchivePaths }: dependencies): GrepArchivesUC =>
   async function* ({
     paths,
     grepPatterns,
   }) {
+    const { pathChecks } = checkArchivePaths({ paths });
+    const failedPaths = [...pathChecks].filter(([, check]) => !check)
+    if (failedPaths.length) {
+      yield { path: '', line: -1, match: '', errMsg: `could not find provided paths: ${failedPaths.map(([path, ]) => path).join(', ')}` }
+      return
+    }
+
     const unixSocketPath = [unixSocketPathArg, socketPath];
     const grepPatternsArgs = grepPatterns.reduce(
       (acc, pattern) => [...acc, patternArg, pattern],
@@ -43,15 +55,12 @@ export const grepArchives = (): GrepArchivesUC =>
     const conn = await listener.accept();
     const reader = readerFromStreamReader(conn.readable.getReader());
 
-    const hits: Hit[] = [];
     for await (const line of readLines(reader)) {
       const argrepData: Data = JSON.parse(line);
       if (isDataResult(argrepData)) {
         yield argrepData;
       }
     }
-
-    return { hits };
   };
 
 function isDataResult(data: Data): data is Hit {
