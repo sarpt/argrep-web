@@ -78,6 +78,5 @@ async function* mapHitsToResponses(results: Results) {
     yield new TextEncoder().encode(`event:${resultsEvent}\ndata:${json}\n\n`);
   }
 
-  yield new TextEncoder().encode(`event:${finishedEvent}\n\n`);
-  return new TextEncoder().encode(`event:${finishedEvent}\n\n`);
+  yield new TextEncoder().encode(`event:${finishedEvent}\ndata:\n\n`);
 }
