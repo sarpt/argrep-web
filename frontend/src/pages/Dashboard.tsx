@@ -36,6 +36,7 @@ export const Dashboard = (props: Props) => {
 
   const onGrep = useCallback(() => {
     setGreppingInProgress(true);
+    setErrMsg(undefined);
     grepPloc({ pattern: grepPattern, path, onResults, onDone, onError });
   }, [grepPattern, path]);
 
