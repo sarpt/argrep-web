@@ -1,10 +1,12 @@
 # argrep-web - run grep recursively on archives
 
-An [argrep](https://github.com/sarpt/argrep) http server. Frontend tbd.
+An [argrep](https://github.com/sarpt/argrep) http server.
 
 ### execution example
 
-Run...
+App is separated into a frontend and backend - backend is written in `deno`, and frontend in `react`.
+
+From `server` directory run...
 
 `deno run --unstable --allow-net --allow-read --allow-write --allow-run ./server/main.ts`
 
@@ -18,8 +20,11 @@ and then run:
 
 `argrep-web`
 
-At the moment frontend is not implemented but a quick & simple way to test
-grepping is by `curl`:
+... to start a server.
+
+Then, to run a frontend, navigate to `frontend` directory and run `yarn serve`.
+
+For quick & simple testing of the server `curl` invocations could be used:
 
 `curl -X PUT --data "path=<path to file>" --data "pattern=<some pattern to search>" localhost:8080/greps`
 
