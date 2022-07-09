@@ -2,41 +2,35 @@ import { readLines } from "https://deno.land/std@0.136.0/io/buffer.ts";
 import { readerFromStreamReader } from "https://deno.land/std@0.136.0/streams/mod.ts";
 import { CheckArchivePathsUC } from "../usecases/checkArchivePaths.ts";
 
-import { GrepArchivesUC, Hit } from "../usecases/grepArchive.ts";
+import { Entry, ListArchiveUC } from "../usecases/listArchive.ts";
 
-type Data = Hit & {
+type Data = Entry & {
   err?: string;
   warn?: string;
   info?: string;
 };
 
-const socketPath = "/tmp/argrep.sock";
+const socketPath = "/tmp/arls.sock";
 
-const argrepCmd = "argrep";
+const argrepCmd = "arls";
 const unixSocketPathArg = "--unix-socket-path";
-const patternArg = "-e";
 const jsonOutputArg = "--json";
-const grepArgsSeparator = "--";
-const caseInsensitiveGrepArg = "-i";
 
 type dependencies = {
   checkArchivePaths: CheckArchivePathsUC;
 };
 
-export const grepArchives = (
+export const listArchive = (
   { checkArchivePaths }: dependencies,
-): GrepArchivesUC =>
+): ListArchiveUC =>
   async function* ({
-    paths,
-    grepPatterns,
+    path,
   }) {
-    const { pathChecks } = checkArchivePaths({ paths });
+    const { pathChecks } = checkArchivePaths({ paths: [path] });
     const failedPaths = [...pathChecks].filter(([, check]) => !check);
     if (failedPaths.length) {
       yield {
         path: "",
-        line: -1,
-        match: "",
         errMsg: `could not find provided paths: ${
           failedPaths.map(([path]) => path).join(", ")
         }`,
@@ -45,18 +39,11 @@ export const grepArchives = (
     }
 
     const unixSocketPath = [unixSocketPathArg, socketPath];
-    const grepPatternsArgs = grepPatterns.reduce(
-      (acc, pattern) => [...acc, patternArg, pattern],
-      [] as string[],
-    );
     Deno.spawn(argrepCmd, {
       args: [
         ...unixSocketPath,
         jsonOutputArg,
-        ...grepPatternsArgs,
-        ...paths,
-        grepArgsSeparator,
-        caseInsensitiveGrepArg,
+        ...path,
       ],
     });
 
@@ -72,6 +59,6 @@ export const grepArchives = (
     }
   };
 
-function isDataResult(data: Data): data is Hit {
-  return !!(data.path && data.match && data.line);
+function isDataResult(data: Data): data is Entry {
+  return !!(data.path && data.variant);
 }
