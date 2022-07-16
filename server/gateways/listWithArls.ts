@@ -30,7 +30,8 @@ export const listArchive = (
     const failedPaths = [...pathChecks].filter(([, check]) => !check);
     if (failedPaths.length) {
       yield {
-        path: "",
+        archivePath: "",
+        absolutePath: "",
         errMsg: `could not find provided paths: ${
           failedPaths.map(([path]) => path).join(", ")
         }`,
@@ -38,13 +39,17 @@ export const listArchive = (
       return;
     }
 
-    const unixSocketPath = [unixSocketPathArg, socketPath];
+    const unixSocketPath = [unixSocketPathArg, socketPath].join('=');
     Deno.spawn(argrepCmd, {
       args: [
-        ...unixSocketPath,
+        unixSocketPath,
         jsonOutputArg,
-        ...path,
+        path,
       ],
+    })
+    .then(({ status, stderr }) => {
+      console.log(status);
+      console.log(new TextDecoder().decode(stderr));
     });
 
     const listener = Deno.listen({ path: socketPath, transport: "unix" });
@@ -60,5 +65,5 @@ export const listArchive = (
   };
 
 function isDataResult(data: Data): data is Entry {
-  return !!(data.path && data.variant);
+  return !!(data.absolutePath && data.archivePath && data.variant);
 }
